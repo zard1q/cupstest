@@ -1,6 +1,6 @@
-# !/usr/bin/python3
-from Printer import Printer
-import sys
+#!/usr/bin/python3
+from printer import Printer
+import os
 import nmap
 import logging
 def init_logger(name):
@@ -19,11 +19,11 @@ def init_logger(name):
 
 def AddPrinters(lport, printers):
     for port in lport:
-        if port == 443 and nmScan[host][proto][port]['state'] == 'open':
+        if port == 631 and nmScan[host][proto][port]['state'] == 'open':
             logger.info(f"Найден IPP принтер {nmScan[host].hostname()}, ip: {host}")
             printers.append(Printer(nmScan[host].hostname(), host, 'ipp'))
             return
-        if port == 5800 and nmScan[host][proto][port]['state'] == 'open':
+        if port == 9100 and nmScan[host][proto][port]['state'] == 'open':
             logger.info(f"Найден RAW принтер {nmScan[host].hostname()}, ip: {host}")
             printers.append(Printer(nmScan[host].hostname(), host, 'raw'))
 
@@ -37,9 +37,12 @@ def Search(printers, ip):
     for printer in printers:
         if printer.ip == ip:
             return printer
-
-def portrait_1_side(printer):
-    pass
+#def mount_printer(printer):
+#    command = f"lpadmin -p ipp_{printer} -E -v ipp://{printer}/ipp/print -m everywhere"
+def portrait_1_side(printername, filename):
+    command = f"lp -o media=A4,portrait -d {printername} {filename}"
+    os.system(command)
+    return
 def portrait_2_side(printer):
     pass
 def landscape_1_side(printer):
@@ -83,9 +86,15 @@ TESTMENU_OPTIONS = {
 }
 def TestMenu():
     printer = Search(printers, input(TESTPRINTER_PROMPT))
-    while (selection := input(TESTMENU_PROMPT)) != "9":
+    printer.mount()
+    while True:
+      selection = input(TESTMENU_PROMPT)
+      if selection == "9":
+        break
+     #((selection = input(TESTMENU_PROMPT) != "9"):
+      else:
         try:
-            TESTMENU_OPTIONS[selection](printer)
+            TESTMENU_OPTIONS[selection](printer.name,'testprint.txt')
         except KeyError:
             logger.error("Введен неправильный номер, попробуйте еще раз")
 
@@ -104,7 +113,7 @@ logger.debug(f"Получен список подсетей: {netrange}")
 f.close()
 printers = []
 for net in netrange:
-    nmScan.scan(net, '443, 5800', '-sS')
+    nmScan.scan(net, '631, 9100', '-sS')
     logger.debug(f"Сканирую подсеть {net}")
     for host in nmScan.all_hosts():
         for proto in nmScan[host].all_protocols():

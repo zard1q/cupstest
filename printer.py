@@ -1,8 +1,12 @@
+import os
 class Printer:
     def __init__(self, name, ip, protocol):
         self.name = name
         self.ip = ip
         self.protocol = protocol
+    def mount(self):
+        command = f"lpadmin -p {self.name} -E -v ipp://{self.ip}/ipp/print -m everywhere"
+        os.system(command)
 
     def test_1_side_portrait(self):
         pass
