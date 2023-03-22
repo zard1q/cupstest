@@ -37,6 +37,7 @@ def Search(printers, ip):
     for printer in printers:
         if printer.ip == ip:
             return printer
+    raise ValueError("Принтер не найден")
 #def mount_printer(printer):
 #    command = f"lpadmin -p ipp_{printer} -E -v ipp://{printer}/ipp/print -m everywhere"
 def portrait_1_side(printername, filename):
@@ -60,7 +61,7 @@ def landscape_color(printer):
 
 
 
-TESTPRINTER_PROMPT = "Выберите принтер для тестирования(укажите IP адрес принтера): "
+TESTPRINTER_PROMPT = "Выберите принтер для тестирования(укажите IP адрес принтера) или введите 'exit' для выхода: "
 TESTMENU_PROMPT = """ Меню тестирования принтера 
 1) 1-сторонняя печать(книжная)
 2) 2-сторонняя печать(книжная)
@@ -85,18 +86,27 @@ TESTMENU_OPTIONS = {
     "8": landscape_color
 }
 def TestMenu():
-    printer = Search(printers, input(TESTPRINTER_PROMPT))
-    printer.mount()
     while True:
-      selection = input(TESTMENU_PROMPT)
-      if selection == "9":
-        break
-     #((selection = input(TESTMENU_PROMPT) != "9"):
-      else:
-        try:
-            TESTMENU_OPTIONS[selection](printer.name,'testprint.txt')
-        except KeyError:
-            logger.error("Введен неправильный номер, попробуйте еще раз")
+        printer_ip = input(TESTPRINTER_PROMPT)
+        if printer_ip == "exit":
+            break
+        else:
+            try:        
+                printer = Search(printers, printer_ip)
+            except Exception:
+                logger.error("Принтер не найден, введите правильный IP адрес")
+            else:
+                printer.mount()
+            while True:
+                selection = input(TESTMENU_PROMPT)
+                if selection == "9":
+                    break
+                #((selection := input(TESTMENU_PROMPT) != "9"):
+                else:
+                    try:
+                        TESTMENU_OPTIONS[selection](printer.name,'testprint.txt')
+                    except KeyError:
+                        logger.error("Введен неправильный номер, попробуйте еще раз")
 
 
 
