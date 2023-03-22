@@ -3,6 +3,7 @@ from printer import Printer
 import os
 import nmap
 import logging
+import csv
 def init_logger(name):
     logger = logging.getLogger(name)
     FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
@@ -41,14 +42,19 @@ def Search(printers, ip):
 #def mount_printer(printer):
 #    command = f"lpadmin -p ipp_{printer} -E -v ipp://{printer}/ipp/print -m everywhere"
 
-def WritePrintResult():
-    while True:
-            print_result = input("Укажите правильно ли напечатан результат('+' - да, '-' - нет')") 
-            if print_result == "-":
-                comments = input("Оставьте комментарий что напечаталось неправильно: ")
-            elif print_result == "+":
-            else:
-                break
+def WritePrintResult(printer):
+    print_result = input("Укажите правильно ли напечатан результат('+' - да, '-' - нет')") 
+    if print_result == "-":
+        comments = input("Оставьте комментарий что напечаталось неправильно: ")
+    elif print_result == "+":
+        comments = ' '
+    else:
+        return WritePrintResult
+    with open(f'Print_Result.csv', 'w') as resultcsv:
+        wr = csv.writer(resultcsv, quoting=csv.QUOTE_ALL)
+        resultcsv.write('IP, HostName, ConnectionType, Result, Comments')
+        # resultcsv.write('\n%s, %s, ipp' % (host, nmScan[host].hostname()))
+        resultcsv.write(f"{printer.ip}, {printer.name}, {printer.protocol}, {print_result}, {comments}")
 
 
 
