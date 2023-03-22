@@ -97,16 +97,16 @@ def TestMenu():
                 logger.error("Принтер не найден, введите правильный IP адрес")
             else:
                 printer.mount()
-            while True:
-                selection = input(TESTMENU_PROMPT)
-                if selection == "9":
-                    break
-                #((selection := input(TESTMENU_PROMPT) != "9"):
-                else:
-                    try:
-                        TESTMENU_OPTIONS[selection](printer.name,'testprint.txt')
-                    except KeyError:
-                        logger.error("Введен неправильный номер, попробуйте еще раз")
+                while True:
+                    selection = input(TESTMENU_PROMPT)
+                    if selection == "9":
+                        break
+                    #((selection := input(TESTMENU_PROMPT) != "9"):
+                    else:
+                        try:
+                            TESTMENU_OPTIONS[selection](printer.name,'testprint.txt')
+                        except KeyError:
+                            logger.error("Введен неправильный номер, попробуйте еще раз")
 
 
 
