@@ -40,10 +40,24 @@ def Search(printers, ip):
     raise ValueError("Принтер не найден")
 #def mount_printer(printer):
 #    command = f"lpadmin -p ipp_{printer} -E -v ipp://{printer}/ipp/print -m everywhere"
+
+def WritePrintResult():
+    while True:
+            print_result = input("Укажите правильно ли напечатан результат('+' - да, '-' - нет')") 
+            if print_result == "-":
+                comments = input("Оставьте комментарий что напечаталось неправильно: ")
+            elif print_result == "+":
+            else:
+                break
+
+
+
+
 def portrait_1_side(printername, filename):
     command = f"lp -o media=A4,portrait -d {printername} {filename}"
     os.system(command)
-    return
+    
+        
 def portrait_2_side(printer):
     pass
 def landscape_1_side(printer):
