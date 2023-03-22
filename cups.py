@@ -42,12 +42,15 @@ def Search(printers, ip):
 #def mount_printer(printer):
 #    command = f"lpadmin -p ipp_{printer} -E -v ipp://{printer}/ipp/print -m everywhere"
 
-def WritePrintResult(printer):
-    print_result = input("Укажите правильно ли напечатан результат('+' - да, '-' - нет): ") 
+def WritePrintResult(printer, test_name):
+    logger.info(f"Тестовая {test_name} отправлена на принтер{printer.name} IP: {printer.ip}")
+    print_result = input(f"Укажите правильно ли напечатан результат теста '{test_name}' ('+' - да, '-' - нет): ") 
     if print_result == "-":
         comments = input("Оставьте комментарий что напечаталось неправильно: ")
+        logger.info("Тест печати {test_name} не пройден")
     elif print_result == "+":
-        comments = ' '
+        logger.info("Тест печати {test_name} пройден")
+        # comments = ' '
     else:
         return WritePrintResult
     with open(f'Print_Result.csv', 'a') as resultcsv:
@@ -60,9 +63,12 @@ def WritePrintResult(printer):
 
 
 def portrait_1_side(printer, filename):
+    test_name = "1-сторонняя печать(книжная)"
     command = f"lp -o media=A4,portrait -d {printer.name} {filename}"
     os.system(command)
-    WritePrintResult(printer)
+    WritePrintResult(printer, test_name)
+    
+    
         
 def portrait_2_side(printer):
     pass
@@ -129,18 +135,16 @@ def TestMenu():
                             logger.error("Введен неправильный номер, попробуйте еще раз")
 
 
-
-
 init_logger("cups")
 logger = logging.getLogger("cups.main")
 
 nmScan = nmap.PortScanner()
 
-f = open('ip_range.config')
-netrange = f.read().splitlines()
+netrange_config = open('ip_range.config')
+netrange = netrange_config.read().splitlines()
 
 logger.debug(f"Получен список подсетей: {netrange}")
-f.close()
+netrange_config.close()
 printers = []
 for net in netrange:
     nmScan.scan(net, '631, 9100', '-sS')
