@@ -59,10 +59,10 @@ def WritePrintResult(printer):
 
 
 
-def portrait_1_side(printername, filename):
-    command = f"lp -o media=A4,portrait -d {printername} {filename}"
+def portrait_1_side(printer, filename):
+    command = f"lp -o media=A4,portrait -d {printer.name} {filename}"
     os.system(command)
-    
+    WritePrintResult(printer)
         
 def portrait_2_side(printer):
     pass
