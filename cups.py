@@ -43,18 +43,18 @@ def Search(printers, ip):
 #    command = f"lpadmin -p ipp_{printer} -E -v ipp://{printer}/ipp/print -m everywhere"
 
 def WritePrintResult(printer):
-    print_result = input("Укажите правильно ли напечатан результат('+' - да, '-' - нет')") 
+    print_result = input("Укажите правильно ли напечатан результат('+' - да, '-' - нет): ") 
     if print_result == "-":
         comments = input("Оставьте комментарий что напечаталось неправильно: ")
     elif print_result == "+":
         comments = ' '
     else:
         return WritePrintResult
-    with open(f'Print_Result.csv', 'w') as resultcsv:
+    with open(f'Print_Result.csv', 'a') as resultcsv:
         wr = csv.writer(resultcsv, quoting=csv.QUOTE_ALL)
-        resultcsv.write('IP, HostName, ConnectionType, Result, Comments')
+        #resultcsv.write('IP, HostName, ConnectionType, Result, Comments')
         # resultcsv.write('\n%s, %s, ipp' % (host, nmScan[host].hostname()))
-        resultcsv.write(f"{printer.ip}, {printer.name}, {printer.protocol}, {print_result}, {comments}")
+        resultcsv.write(f"\n{printer.ip}, {printer.name}, {printer.protocol}, {print_result}, {comments}")
 
 
 
@@ -124,7 +124,7 @@ def TestMenu():
                     #((selection := input(TESTMENU_PROMPT) != "9"):
                     else:
                         try:
-                            TESTMENU_OPTIONS[selection](printer.name,'testprint.txt')
+                            TESTMENU_OPTIONS[selection](printer,'testprint.txt')
                         except KeyError:
                             logger.error("Введен неправильный номер, попробуйте еще раз")
 
